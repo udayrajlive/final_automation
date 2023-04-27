@@ -1,12 +1,16 @@
 // ignore_for_file: file_names
+
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:final_automation/components/ButtonDouble.dart';
-import 'package:final_automation/components/ButtonSingle.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 
 
-import 'components/VoiceButtonPage.dart';
+// import 'components/VoiceButtonPage.dart';
 
 class ControlePrincipalPage extends StatefulWidget {
   final BluetoothDevice? server;
@@ -41,7 +45,9 @@ class _ControlePrincipalPage extends State<ControlePrincipalPage> {
   bool isDisconnecting = false;
   bool buttonClicado = false;
 
-  List<String> _languages = ['en_US', 'es_ES', 'pt_BR'];
+
+  // List<String> _languages = ['en_US', 'es_ES', 'pt_BR'];
+
 
   @override
   void initState() {
@@ -49,12 +55,45 @@ class _ControlePrincipalPage extends State<ControlePrincipalPage> {
 
     BluetoothConnection.toAddress(widget.server!.address).then((_connection) {
       print('Connected to device');
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.lightGreen,
+            elevation: 0,
+            duration: Duration(seconds: 3),
+            content: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                    color: Colors.lightGreen
+                ),
+                child: Column(
+                  mainAxisAlignment:  MainAxisAlignment.center,
+                  children: [
+                    Text('Hurray!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        color: Colors.white,
+                      ),),
+                    Text('Paired Successfully',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),),
+                  ],
+                )),
+          )
+      );
       connection = _connection;
-      setState(() {
-        
+
+      setState
+        (()
+      {
+
         isConnecting = false;
         isDisconnecting = false;
-      });
+
+      }
+      );
 
       connection!.input!.listen(_onDataReceived).onDone(() {
         // Example: Detect which side closed the connection
@@ -65,14 +104,107 @@ class _ControlePrincipalPage extends State<ControlePrincipalPage> {
         // If we didn't except this (no flag set), it means closing by remote.
         if (isDisconnecting) {
           print('Disconnected localy!');
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.blueAccent,
+                elevation: 0,
+                duration: Duration(seconds: 3),
+                content: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.blueAccent
+                    ),
+                    child: Column(
+                      mainAxisAlignment:  MainAxisAlignment.center,
+                      children: [
+
+                        Text('Disconnected localy!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),),
+                      ],
+                    )),
+              )
+          );
         } else {
+
           print('Disconnected remote!');
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.blueAccent,
+                elevation: 0,
+                duration: Duration(seconds: 3),
+                content: Container(
+                    height: 50,
+                    decoration: BoxDecoration(
+                        color: Colors.blueAccent
+                    ),
+                    child: Column(
+                      mainAxisAlignment:  MainAxisAlignment.center,
+                      children: [
+                        Text('Disconnected remote!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),),
+                      ],
+                    )),
+              )
+          );
         }
         if (mounted) {
           setState(() {});
         }
       });
     }).catchError((error) {
+      Future.delayed(Duration(seconds:3),(){
+        Navigator.pushReplacementNamed(context, '/selectDevice');
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.blueAccent,
+            elevation: 0,
+            duration: Duration(seconds: 2),
+            content: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.blueAccent,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(12))
+              ),
+              child: Row(
+                mainAxisAlignment:  MainAxisAlignment.center,
+                children: [
+                 Column(
+                   children: [
+                     Text('Oh Snap!',
+                       style: TextStyle(
+                         fontWeight: FontWeight.w600,
+                         fontSize: 18,
+                         color: Colors.white,
+                       ),),
+                     Text('Failed to connect, something is wrong!',
+                       style: TextStyle(
+                         fontSize: 14,
+                         color: Colors.white,
+                       ),),
+                   ],
+                 ),
+                  Column(
+                    children: [
+                      IconButton(onPressed: (){
+                        Future.delayed(Duration(milliseconds:200),(){
+                          Navigator.pushReplacementNamed(context, '/selectDevice');
+                        });
+                      }, icon: Icon(Icons.refresh)),
+                    ],
+                  )
+                ],
+              )),
+          ),
+      );
+
       print('Failed to connect, something is wrong!');
       print(error);
     });
@@ -81,7 +213,9 @@ class _ControlePrincipalPage extends State<ControlePrincipalPage> {
   @override
   void dispose() {
     // Avoid memory leak (`setState` after dispose) and disconnect
-    if (isConnected) {
+    if (isConnected)
+    {
+
       isDisconnecting = true;
       connection!.dispose();
       connection = null;
@@ -116,327 +250,94 @@ class _ControlePrincipalPage extends State<ControlePrincipalPage> {
       );
     }).toList();
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 10),
-        child: Center(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+    return Center(
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: isConnected ? Expanded(
+            flex:  2,
             child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(children: [
+
+                  ]),
+                  Column(children: [
+                    ButtonDoubleComponent(
+                      buttonName: "Switch 1",
+                      comandOn: '2',
+                      comandOff: '1',
+                      clientID: clientID,
+                      connection: connection,
+                    ),
+                  ]),
+
+                  Column(children: [
+                    ButtonDoubleComponent(
+                      buttonName: "Switch 2",
+                      comandOn: '4',
+                      comandOff: '3',
+                      clientID: clientID,
+                      connection: connection,
+                    ),
+                  ]),
+
+                  Column(children: [
+                    ButtonDoubleComponent(
+                      buttonName: "Switch 4",
+                      comandOn: '6',
+                      comandOff: '5',
+                      clientID: clientID,
+                      connection: connection,
+                    ),
+                  ]),
+
+        Column(children: [
+            ButtonDoubleComponent(
+              buttonName: "Switch 5",
+              comandOn: '8',
+              comandOff: '7',
+              clientID: clientID,
+              connection: connection,
+            ),
+        ]),
+
+        Column(children: [
+            ButtonDoubleComponent(
+              buttonName: "Switch 6",
+              comandOn: '10',
+              comandOff: '9',
+              clientID: clientID,
+              connection: connection,
+            ),
+        ])
+                  ,
+            ],
+        ),
+          ): Expanded(
+            flex: 1,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          Container(
-                              height: 60, width: 90, child: SizedBox.shrink())
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          Container(
-                            height: 60,
-                            width: 90,
-                            child: VoiceButtonComponent(
-                                connection: connection,
-                                clientID: clientID,
-                                languageSelected: language),
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Container(
-                                child: DropdownButton<String>(
-                                  value: language == null ? 'pt_BR' : language,
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-                                  items: _languages.map((String items) {
-                                    return DropdownMenuItem(
-                                      value: items,
-                                      child: Text(items),
-                                    );
-                                  }).toList(),
-                                  // After selecting the desired option,it will
-                                  // change button value to selected value
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      language = newValue!;
-                                    });
-                                  },
-                                ),
-                              )
-                            ]),
-                      ]),
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Lottie.asset('assets/connecting_BP.json',fit: BoxFit.cover),
+
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "A/B",
-                            comandOn: 'a',
-                            comandOff: 'b',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "C/D",
-                            comandOn: 'c',
-                            comandOff: 'd',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "E/F",
-                            comandOn: 'e',
-                            comandOff: 'f',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "G/H",
-                            comandOn: 'g',
-                            comandOff: 'h',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "I/J",
-                            comandOn: 'i',
-                            comandOff: 'j',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "K/L",
-                            comandOn: 'k',
-                            comandOff: 'l',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "M/N",
-                            comandOn: 'm',
-                            comandOff: 'n',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "O/P",
-                            comandOn: 'o',
-                            comandOff: 'p',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "Q/R",
-                            comandOn: 'q',
-                            comandOff: 'r',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "S/T",
-                            comandOn: 's',
-                            comandOff: 't',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "U/V",
-                            comandOn: 'u',
-                            comandOff: 'v',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "W/X",
-                            comandOn: 'w',
-                            comandOff: 'x',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "Y/Z",
-                            comandOn: 'y',
-                            comandOff: 'z',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "0/1",
-                            comandOn: '0',
-                            comandOff: '1',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "2/3",
-                            comandOn: '2',
-                            comandOff: '3',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "4/5",
-                            comandOn: '4',
-                            comandOff: '5',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "6/7",
-                            comandOn: '6',
-                            comandOff: '7',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 30),
-                        Column(children: [
-                          ButtonDoubleComponent(
-                            buttonName: "8/9",
-                            comandOn: '8',
-                            comandOff: '9',
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(children: [
-                          ButtonSingleComponent(
-                            buttonName: "+",
-                            comandOn: '+',
-                            colorButton: Color.fromRGBO(238, 57, 61, 1),
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 10),
-                        Column(children: [
-                          ButtonSingleComponent(
-                            buttonName: "-",
-                            comandOn: '-',
-                            colorButton: Color.fromRGBO(8, 164, 113, 1),
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 10),
-                        Column(children: [
-                          ButtonSingleComponent(
-                            buttonName: "*",
-                            comandOn: '*',
-                            colorButton: Color.fromRGBO(239, 206, 45, 1),
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                        const SizedBox(width: 10),
-                        Column(children: [
-                          ButtonSingleComponent(
-                            buttonName: "/",
-                            comandOn: '/',
-                            colorButton: Color.fromRGBO(49, 86, 188, 1),
-                            clientID: clientID,
-                            connection: connection,
-                          ),
-                        ]),
-                      ]),
-                ),
+                Text("Paring...",
+                style: GoogleFonts.comfortaa(textStyle: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color:  Colors.lightGreen
+                )),)
               ],
             ),
           ),
-        ),
+      ),
       ),
     );
   }

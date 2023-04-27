@@ -4,6 +4,7 @@ import 'package:final_automation/ControlePrincipal.dart';
 import 'package:final_automation/SelecionarDispositivo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'components/CustomAppBar.dart';
 import 'provider/StatusConexaoProvider.dart';
@@ -22,6 +23,7 @@ class HomePage extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(
         Title: 'Remote',
         isBluetooth: true,
@@ -34,18 +36,28 @@ class HomePage extends StatelessWidget {
           child: Consumer<StatusConexaoProvider>(
               builder: (context, StatusConnectionProvider, widget) {
             return (StatusConnectionProvider.device == null
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.bluetooth_disabled_sharp, size: 50),
-                      const Text(
-                        "Bluetooth Disconnected",
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                      )
-                    ],
-                  )
+                ? Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: MediaQuery.of(context).size.width*0.7,
+                    height: 200,
+                    child: Lottie.asset("assets/blueSearch.json",fit: BoxFit.contain),
+                    ),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // const Icon(Icons.bluetooth_searching, size: 50),
+                          const Text(
+                            "Search for Bluetooth devices",
+                            style: TextStyle(
+                              color:  Colors.black,
+                              fontSize: 20,
+                            ),
+                          )
+                        ],
+                      ),
+                  ],
+                )
                 : ControlePrincipalPage(
                     server: StatusConnectionProvider.device));
           }),

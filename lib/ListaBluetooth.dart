@@ -17,11 +17,16 @@ class ListaBluetoothPage extends ListTile {
           onLongPress: onLongPress,
           enabled: enabled,
           leading: const Icon(
-              Icons.devices), // @TODO . !BluetoothClass! class aware icon
+              Icons.devices),
+
+    // @TODO . !BluetoothClass! class aware icon
+
           title: Text(device!.name ?? "Unknown device"),
           subtitle: Text(device.address.toString()),
           trailing: Row(
+
             mainAxisSize: MainAxisSize.min,
+
             children: <Widget>[
               rssi != null
                   ? Container(

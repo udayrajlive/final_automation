@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:final_automation/HomePage.dart';
 import 'package:final_automation/provider/StatusConexaoProvider.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.onPress,
   }) : super(key: key);
   @override
-  Size get preferredSize => const Size.fromHeight(100);
+  Size get preferredSize => const Size.fromHeight(80);
 
   @override
   Widget build(BuildContext context) {
@@ -26,54 +27,59 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       Provider.of<StatusConexaoProvider>(context, listen: false)
           .setDevice(null);
     }
-
-    return AppBar(
-      toolbarHeight: 100.0,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(5))),
-      title: new Center(
-          child: Row(
-        children: [
-          new Text(Title!, textAlign: TextAlign.center),
-        ],
-      )),
-      backgroundColor: Color.fromRGBO(237, 46, 39, 1),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: Container(
-            height: 60,
-            width: 60,
-            child: Consumer<StatusConexaoProvider>(
-                builder: (context, StatusConnectionProvider, widget) {
-              return (isBluetooth!
-                  ? ElevatedButton(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 5,
+        toolbarHeight: 80,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20))),
+        title: new Center(
+            child: Row(
+              children: [
+                new Text(Title!, textAlign: TextAlign.center),
+              ],
+            )),
+        backgroundColor: Colors.blueAccent,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Container(
+              height: 60,
+              width: 60,
+              child: Consumer<StatusConexaoProvider>(
+                  builder: (context, StatusConnectionProvider, widget) {
+                    return (isBluetooth!
+                        ? ElevatedButton(
                       onPressed: StatusConnectionProvider.device != null
                           ? () {
-                              Provider.of<StatusConexaoProvider>(context,
-                                      listen: false)
-                                  .setDevice(null);
-                              Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      settings: const RouteSettings(name: '/'),
-                                      builder: (context) =>
-                                          const HomePage())); // push it back in
-                            }
+
+                        Provider.of<StatusConexaoProvider>(context,
+                            listen: false)
+                            .setDevice(null);
+                        Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                settings: const RouteSettings(name: '/homepage'),
+                                builder: (context) =>
+                                const HomePage())); // push it back in
+
+                      }
                           : onPress!(),
                       child: Icon(StatusConnectionProvider.device != null
                           ? Icons.bluetooth_connected
                           : Icons.bluetooth_disabled),
                       style: ElevatedButton.styleFrom(
                           shape: CircleBorder(),
-                          primary: StatusConnectionProvider.device != null
-                              ? Color.fromRGBO(15, 171, 118, 1)
+                          primary: StatusConnectionProvider.device  != null
+                              ?   Color.fromRGBO(15, 171, 118, 1)
                               : Colors.black),
                     )
-                  : SizedBox.shrink());
-            }),
-          ),
-        )
-      ],
+                        : SizedBox.shrink());
+                  }),
+            ),
+          )
+
+        ],
+      ),
     );
   }
 }

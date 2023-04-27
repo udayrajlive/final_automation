@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'dart:async';
+
 import 'package:final_automation/HomePage.dart';
 import 'package:final_automation/ListaBluetooth.dart';
 import 'package:final_automation/provider/StatusConexaoProvider.dart';
@@ -41,24 +42,23 @@ class _SelecionarDispositivoPage extends State<SelecionarDispositivoPage> {
   // Availability
   StreamSubscription<BluetoothDiscoveryResult>? _discoveryStreamSubscription;
   bool? _isDiscovering;
-
+  bool  isPressed =true;
   _SelecionarDispositivoPage();
 
   @override
   void initState() {
     super.initState();
-
     _isDiscovering = widget.checkAvailability;
 
-    if (_isDiscovering!) {
-      _startDiscovery();
+    if (_isDiscovering!)
+    {
+       _startDiscovery();
     }
-
     // Setup a list of the bonded devices
     FlutterBluetoothSerial.instance
         .getBondedDevices()
         .then((List<BluetoothDevice> bondedDevices) {
-      setState(() {
+      setState(()  {
         devices = bondedDevices
             .map(
               (device) => _DeviceWithAvailability(
@@ -91,6 +91,7 @@ class _SelecionarDispositivoPage extends State<SelecionarDispositivoPage> {
     _discoveryStreamSubscription!.onDone(() {
       setState(() {
         _isDiscovering = false;
+
       });
     });
   }
@@ -99,6 +100,7 @@ class _SelecionarDispositivoPage extends State<SelecionarDispositivoPage> {
   void dispose() {
     // Avoid memory leak (`setState` after dispose) and cancel discovery
     _discoveryStreamSubscription?.cancel();
+    
 
     super.dispose();
   }
@@ -110,10 +112,11 @@ class _SelecionarDispositivoPage extends State<SelecionarDispositivoPage> {
           (_device) => ListaBluetoothPage(
             device: _device.device,
             onTap: () {
+
               Provider.of<StatusConexaoProvider>(context, listen: false)
                   .setDevice(_device.device!);
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  settings: const RouteSettings(name: '/'),
+                  settings: const RouteSettings(name: '/homepage'),
                   builder: (context) => HomePage()));
             },
           ),
@@ -121,14 +124,25 @@ class _SelecionarDispositivoPage extends State<SelecionarDispositivoPage> {
         .toList();
     return Scaffold(
       appBar: CustomAppBar(
-        Title: 'Bluetooh list',
+        Title: 'Bluetooth list',
         isBluetooth: false,
         isDiscovering: false,
         onPress: () {},
       ),
       body: ListView(
         children: list,
+
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+
+      print("presssed refresh");
+      _isDiscovering = true;
+      _startDiscovery();
+
+    },
+    child: Icon(  Icons.refresh_rounded),
+    ),
     );
   }
 }

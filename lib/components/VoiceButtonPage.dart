@@ -70,7 +70,8 @@ class _VoiceButtonState extends State<VoiceButtonComponent> {
     });
   }
 
-  _sendMessage(text) async {
+  _sendMessage(text) async
+  {
     text = text.trim();
     textEditingController.clear();
 
